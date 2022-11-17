@@ -1,3 +1,4 @@
+from domain.play.lay_track_play import LayTrackPlay
 from domain.state.company_state import CompanyState
 from domain.state.map_state import MapState
 from domain.state.player_state import PlayerState
@@ -42,4 +43,7 @@ class State:
                     return player_state.player
 
     def legal_plays(self):
-        pass
+        company2run = self.companies2run[0]
+        if self.op_index == 0:
+            # lay_or_upgrade_track
+            return [LayTrackPlay(tile) for tile in self.map_state.legal_new_tiles(company2run)]

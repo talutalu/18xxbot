@@ -10,7 +10,7 @@ class CompanyState:
                  money: int,
                  trains: list[Train],
                  share_value: int,
-                 token_location):
+                 token_location: tuple[int, int, int]):
         self.company = company
         self.money = money
         self.trains = trains

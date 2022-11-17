@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 from domain.future_tile import FutureTile
-from domain.tile import Tile
+from domain.state.company_state import CompanyState
+from typing import TYPE_CHECKING
+
+from domain.state.map.city import City
+from domain.state.map.tile import Tile
 
 
 class MapState:
@@ -14,31 +20,35 @@ class MapState:
         self.width = width
         self.height = height
         # TODO don't instantiate too many tiles, the x component only has a tile every other index
-        self.tiles = [[Tile([], 0, 0, [], None) for x in range(width)]
+        self.tiles = [[Tile([], 0, [], x, y, None) for x in range(width)]
                       for y in range(height)]
-
-        self.cities = []
         self.future_tiles_from_city: list[FutureTile] = []
 
-    def neighbors(self, x: int, y: int):
+    def neighbor(self, x: int, y: int, face: int):
         h = self.height - 1
-        tile_0 = None if y == 0 or (y == 1 and x % 2 == 0) else self.tiles[y - 1][x]
-        tile_1 = None if y == 0 or (y == 1 and (x + 1) % 2 == 0) else self.tiles[y - 1][x + 1]
-        tile_2 = None if y == h or (y == h - 1 and (x + 1) % 2 == 0) else self.tiles[y + 1][x + 1]
-        tile_3 = None if y == h or (y == h - 1 and x % 2 == 0) else self.tiles[y + 1][x]
-        tile_4 = None if y == h or (y == h - 1 and (x - 1) % 2 == 0) else self.tiles[y + 1][x - 1]
-        tile_5 = None if y == 0 or (y == 1 and (x - 1) % 2 == 0) else self.tiles[y - 1][x - 1]
-        return [tile_0, tile_1, tile_2, tile_3, tile_4, tile_5]
+        if face == 0:
+            return None if y == 0 or (y == 1 and x % 2 == 0) else self.tiles[y - 1][x]
+        elif face == 1:
+            return None if y == 0 or (y == 1 and (x + 1) % 2 == 0) else self.tiles[y - 1][x + 1]
+        elif face == 2:
+            return None if y == h or (y == h - 1 and (x + 1) % 2 == 0) else self.tiles[y + 1][x + 1]
+        elif face == 3:
+            return None if y == h or (y == h - 1 and x % 2 == 0) else self.tiles[y + 1][x]
+        elif face == 4:
+            return None if y == h or (y == h - 1 and (x - 1) % 2 == 0) else self.tiles[y + 1][x - 1]
+        elif face == 5:
+            return None if y == 0 or (y == 1 and (x - 1) % 2 == 0) else self.tiles[y - 1][x - 1]
 
-    def put_tile(self, x: int, y: int, tile: Tile):
-        self.tiles[y][x] = tile
+    def neighbors(self, x: int, y: int):
+        return [self.neighbor(x, y, face) for face in range(6)]
 
-        if tile.contains_city():
-            # TODO this implementation is not enough
-            # update future tiles
+    def legal_new_tiles(self, company_state: CompanyState):
+        (x, y, c) = company_state.token_location
+        city = self.tiles[y][x].cities[c]
+        return city.legal_new_tiles(self)
 
-            self.cities.extend([(x, y, c) for c in tile.num_cities()])
-        pass
+    def put_tile(self, tile: Tile):
+        self.tiles[tile.y][tile.x] = tile
 
     def upgrade_tile(self, x: int, y: int, tile: Tile):
         pass
@@ -51,19 +61,22 @@ class MapState:
         xd = xo
         yd = y - 1 if xo % 2 == 1 else y - 2
 
-        to = ms.tiles[yo][xo]
-        td = ms.tiles[yd][xd]
+        a = Tile(connections=[(2, 2), (4, 4)],
+                 level=2,
+                 cities=[],
+                 x=xo,
+                 y=yo,
+                 revenue=40)
+        a.cities = [City(a, 0), City(a, 1)]
+        ms.put_tile(a)
 
-        to.connections = [(2, 2), (4, 4)]
-        to.level = 2
-        to.city_level = 3
-        to.city_connections = [0, 1]
-        to.revenue = 40
-
-        td.connections = [(0, 0)]
-        td.level = 2
-        to.city_level = 2
-        to.city_connections = [0]
-        to.revenue = 30
+        b = Tile(connections=[(0, 0)],
+                 level=2,
+                 cities=[],
+                 x=xd,
+                 y=yd,
+                 revenue=30)
+        b.cities = [City(b, 0)]
+        ms.put_tile(b)
 
         return ms

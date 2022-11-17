@@ -14,9 +14,9 @@ class Board:
     def start(self):
         # Returns a representation of the starting state of the game.
         company_1 = Company("corp 1")
-        company_state_1 = CompanyState(company_1, 200, [], 100, (1, 1, 0))
+        company_state_1 = CompanyState(company_1, 200, [], 100, (8, 0, 1))
         company_2 = Company("corp 2")
-        company_state_2 = CompanyState(company_2, 200, [], 100, (1, 1, 1))
+        company_state_2 = CompanyState(company_2, 200, [], 100, (8, 0, 0))
         player_a = Player("bot a")
         player_b = Player("bot b")
         player_state_a = PlayerState(player_a, 20, [Share(company_1, 100, True)])
@@ -24,7 +24,7 @@ class Board:
         share_market_state = ShareMarketState()
         share_market_state.add_company(company_state_1)
         share_market_state.add_company(company_state_2)
-        return State(map_state=MapState.generate_test_for_2p(3, 5),
+        return State(map_state=MapState.generate_test_for_2p(17, 20),
                      player_states=[player_state_a, player_state_b],
                      company_states=[company_state_1, company_state_2],
                      track_market_state=TrackMarketState(),
