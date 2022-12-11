@@ -20,7 +20,8 @@ from domain.state.map.city import City
 
 class Tile:
 
-    def __init__(self, connections, level, cities: list[City], x: int=None, y: int=None, revenue=None):
+    def __init__(self, id, connections, level, cities: list[City], x: int=None, y: int=None, revenue=None):
+        self.id = id
         self.connections: list[tuple[int, ...]] = connections
         # empty is 0, yellow is 1, green is 2, brown is 3 and grey is 4
         self.level = level
@@ -32,11 +33,14 @@ class Tile:
 
         self.revenue = revenue
 
+        self.rotation = 0
+
     def __str__(self):
         return "Tile(" + str(self.connections) + ")"
 
     def clone(self):
-        return Tile(connections=[c for c in self.connections],
+        return Tile(id=self.id,
+                    connections=[c for c in self.connections],
                     level=self.level,
                     # TODO deep clone this?
                     cities=self.cities,
@@ -51,6 +55,7 @@ class Tile:
             if candidate not in [t.connections for t in unique_rotations]:
                 tile = self.clone()
                 tile.connections = candidate
+                tile.rotation = inc
                 unique_rotations.append(tile)
         return unique_rotations
 

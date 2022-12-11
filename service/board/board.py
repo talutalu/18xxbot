@@ -1,12 +1,14 @@
+from domain.play.play import Play
 from domain.share import Share
 from domain.company import Company
 from domain.player import Player
 from domain.state.company_state import CompanyState
+from domain.state.map.tile import Tile
 from domain.state.map_state import MapState
 from domain.state.player_state import PlayerState
 from domain.state.share_market_state import ShareMarketState
 from domain.state.state import State
-from domain.state.track_market_state import TrackMarketState
+from domain.state.tile_market_state import TileMarketState
 
 
 class Board:
@@ -24,16 +26,23 @@ class Board:
         share_market_state = ShareMarketState()
         share_market_state.add_company(company_state_1)
         share_market_state.add_company(company_state_2)
+        tile_market_state = TileMarketState(tiles=[
+            Tile(id=0, connections=[(0, 3)], level=1, cities=[]),
+            Tile(id=0, connections=[(0, 2)], level=1, cities=[]),
+        ], quantities=[
+            5,
+            5
+        ])
         return State(map_state=MapState.generate_test_for_2p(17, 20),
                      player_states=[player_state_a, player_state_b],
                      company_states=[company_state_1, company_state_2],
-                     track_market_state=TrackMarketState(),
+                     tile_market_state=tile_market_state,
                      share_market_state=share_market_state)
 
     def current_player(self, state):
         return state.current_player()
 
-    def next_state(self, state, play):
+    def next_state(self, state: State, play: Play):
         # Takes the game state, and the move to be applied.
         # Returns the new game state.
         pass

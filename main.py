@@ -14,13 +14,9 @@ def test_tile():
 if __name__ == '__main__':
     board = Board()
     state = board.start()
-    company_state = state.company_states[0]
-    for i in range(100000):
-        future_tiles = state.map_state.legal_new_tiles(company_state)
-        # for future_tile in future_tiles:
-        #     print(future_tile)
-        if i % 10000 == 0:
-            print(f"iteration number {i}")
+    future_tiles = board.legal_plays([state])
+    for future_tile in future_tiles:
+        print(future_tile)
     """board = Board()
     mc = MonteCarlo(board=board)
     mc.update(board.start())

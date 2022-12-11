@@ -11,7 +11,7 @@ class ShareMarketState:
 
     def add_company(self, company_state: CompanyState):
         index = self.values.index(company_state.share_value)
-        self.companies[index].append(company_state.company)
+        self.companies[index].append(company_state)
 
     def move_company_left(self, company_state: CompanyState):
         index = self.values.index(company_state.share_value)

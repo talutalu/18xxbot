@@ -1,12 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from domain.state.map.route_atom import RouteAtom
+
 if TYPE_CHECKING:  # Only imports the below statements during type checking
    from domain.state.map.tile import Tile
+   from domain.state.map.city import City
 
 
 class Route:
 
-    def __init__(self, x: int, y: int, ending_face: int):
+    def __init__(self, city: City, atom: RouteAtom):
         """
         A route can be:
          . merged

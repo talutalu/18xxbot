@@ -12,3 +12,8 @@ class FutureTile:
 
     def __str__(self):
         return f"FutureTile({self.tile.x}, {self.tile.y}, faces={self.at_least_one_face})"
+
+    def matches(self, tile: Tile):
+        a = tile.get_connected_edges()
+        b = self.at_least_one_face
+        return len(a.intersection(b)) > 0
