@@ -25,22 +25,8 @@ class MapState:
                       for y in range(height)]
         self.cities = []
 
-    def neighbor(self, c: Coordinate, face: int):
-        x = c.x
-        y = c.y
-        h = self.height - 1
-        if face == 0:
-            return None if y == 0 or (y == 1 and x % 2 == 0) else self.tiles[y - 1][x]
-        elif face == 1:
-            return None if y == 0 or (y == 1 and (x + 1) % 2 == 0) else self.tiles[y - 1][x + 1]
-        elif face == 2:
-            return None if y == h or (y == h - 1 and (x + 1) % 2 == 0) else self.tiles[y + 1][x + 1]
-        elif face == 3:
-            return None if y == h or (y == h - 1 and x % 2 == 0) else self.tiles[y + 1][x]
-        elif face == 4:
-            return None if y == h or (y == h - 1 and (x - 1) % 2 == 0) else self.tiles[y + 1][x - 1]
-        elif face == 5:
-            return None if y == 0 or (y == 1 and (x - 1) % 2 == 0) else self.tiles[y - 1][x - 1]
+    def get_tile(self, c: Coordinate):
+        return self.tiles[c.y][c.x]
 
     def legal_new_tiles(self, company_state: CompanyState):
         (x, y, c) = company_state.token_location
@@ -57,9 +43,9 @@ class MapState:
                 self.cities.append(city)
 
         # check touched roads
-        faces = [[] for _ in range(6)]
         for city in self.cities:
-            city.update_routes(tile)
+            for route in city.update_routes(tile):
+                print(route)
 
         # remove tile from market
 

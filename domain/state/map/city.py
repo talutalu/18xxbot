@@ -28,9 +28,11 @@ class City:
         that starts with this city.
         """
         future_tiles: dict[Coordinate, FutureTile] = {}
+
         for route in self.routes:
             tip = route.list[-1]
-            n = ms.neighbor(tip.c, tip.b_face)
+            n = Coordinate.neighbor(tip.c, tip.b_face)
+            n = ms.get_tile(n)
             if not n or not n.is_empty():
                 continue
             ft = future_tiles.get(tip.c, None)
@@ -38,13 +40,17 @@ class City:
                 ft = FutureTile(n, set())
                 future_tiles[tip.c] = ft
             ft.at_least_one_face.add((tip.b_face + 3) % 6)
+
         return list(future_tiles.values())
 
     def update_routes(self, tile: Tile):
-        """
-        :param tile: a new tile that the user upgraded/put
-        :return: all the roads that where updated
-        """
-        pass
+        affected_routes = []
+
+        for route in self.routes:
+            if route.is_extended_by(tile):
+                route.extend(tile)
+                affected_routes.append(route)
+
+        return affected_routes
 
 

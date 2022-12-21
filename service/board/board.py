@@ -1,3 +1,4 @@
+from domain.play.lay_track_play import LayTrackPlay
 from domain.play.play import Play
 from domain.share import Share
 from domain.company import Company
@@ -45,7 +46,12 @@ class Board:
     def next_state(self, state: State, play: Play):
         # Takes the game state, and the move to be applied.
         # Returns the new game state.
-        pass
+
+        # TODO copy state here
+        if isinstance(play, LayTrackPlay):
+            state.map_state.put_tile(play.tile)
+
+        return state
 
     def legal_plays(self, state_history: list[State]):
         return state_history[-1].legal_plays()
