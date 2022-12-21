@@ -33,7 +33,10 @@ class State:
 
         # we suppose we start the game with the first OP, the first player is the one owning the company with
         # the highest share
+        #
+        # mutable list of companies that need to be run in the OP round
         self.companies2run = self.share_market_state.get_companies_desc()
+        # index of the OP round
         self.op_index = 0
 
     def current_player(self):

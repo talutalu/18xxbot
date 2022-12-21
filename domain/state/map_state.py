@@ -4,6 +4,7 @@ from domain.state.company_state import CompanyState
 from typing import TYPE_CHECKING
 
 from domain.state.map.city import City
+from domain.state.map.coordinate import Coordinate
 from domain.state.map.future_tile import FutureTile
 from domain.state.map.tile import Tile
 
@@ -20,13 +21,13 @@ class MapState:
         self.width = width
         self.height = height
         # TODO don't instantiate too many tiles, the x component only has a tile every other index
-        self.tiles = [[Tile(None, [], 0, [], x, y, None) for x in range(width)]
+        self.tiles = [[Tile(None, [], 0, [], Coordinate(x, y), None) for x in range(width)]
                       for y in range(height)]
-        self.future_tiles_from_city: list[FutureTile] = []
-
         self.cities = []
 
-    def neighbor(self, x: int, y: int, face: int):
+    def neighbor(self, c: Coordinate, face: int):
+        x = c.x
+        y = c.y
         h = self.height - 1
         if face == 0:
             return None if y == 0 or (y == 1 and x % 2 == 0) else self.tiles[y - 1][x]
@@ -41,35 +42,24 @@ class MapState:
         elif face == 5:
             return None if y == 0 or (y == 1 and (x - 1) % 2 == 0) else self.tiles[y - 1][x - 1]
 
-    def neighbors(self, x: int, y: int):
-        return [self.neighbor(x, y, face) for face in range(6)]
-
     def legal_new_tiles(self, company_state: CompanyState):
         (x, y, c) = company_state.token_location
         city = self.tiles[y][x].cities[c]
         return city.legal_new_tiles(self)
 
     def put_tile(self, tile: Tile):
-        old_tile = self.tiles[tile.y][tile.x]
-        self.tiles[tile.y][tile.x] = tile
+        old_tile = self.tiles[tile.c.y][tile.c.x]
+        self.tiles[tile.c.y][tile.c.x] = tile
 
-        # add city and upgrade route extensions
+        # add city if we just added one
         if not old_tile.contains_city() and tile.contains_city():
             for city in tile.cities:
-                city.refresh_route_extensions(self)
                 self.cities.append(city)
 
         # check touched roads
         faces = [[] for _ in range(6)]
         for city in self.cities:
-            coord = (tile.x, tile.y)
-            if coord not in city.route_extensions:
-                continue
-            routes = city.route_extensions[coord]
-            for route in routes:
-                faces[route.ending_face].append(route)
-
-
+            city.update_routes(tile)
 
         # remove tile from market
 
@@ -87,21 +77,21 @@ class MapState:
         a = Tile(connections=[(2, 2), (4, 4)],
                  level=2,
                  cities=[],
-                 x=xo,
-                 y=yo,
+                 c=Coordinate(xo, yo),
                  revenue=40,
                  id=-1)
         a.cities = [City(a, 0), City(a, 1)]
         ms.put_tile(a)
+        print(a)
 
         b = Tile(connections=[(0, 0)],
                  level=2,
                  cities=[],
-                 x=xd,
-                 y=yd,
+                 c=Coordinate(xd, yd),
                  revenue=30,
                  id=-2)
         b.cities = [City(b, 0)]
         ms.put_tile(b)
+        print(b)
 
         return ms

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from domain.state.map.coordinate import Coordinate
 from domain.state.map.route_atom import RouteAtom
 
 if TYPE_CHECKING:  # Only imports the below statements during type checking
@@ -10,20 +11,17 @@ if TYPE_CHECKING:  # Only imports the below statements during type checking
 
 class Route:
 
-    def __init__(self, city: City, atom: RouteAtom):
+    def __init__(self, atom: RouteAtom):
         """
         A route can be:
          . merged
          . extended
          . forked
-        :param x: starting tile x coordinate
-        :param y: starting tile y coordinate
         """
-        self.clist: list[tuple[int, int]] = [(x, y)]
-        self.ending_face = ending_face
+        self.list: list[RouteAtom] = [atom]
 
-    def contains(self, x: int, y: int):
-        return (x, y) in self.clist
+    def contains(self, c: Coordinate):
+        return any(c == e.c for e in self.list)
 
     def merge(self, other: Route):
         pass

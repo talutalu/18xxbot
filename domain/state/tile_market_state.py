@@ -10,12 +10,15 @@ class TileMarketState:
         self.quantities = quantities
 
     def available_tiles(self, ft: FutureTile) -> list[Tile]:
+        """
+        :param ft:
+        :return: the available tiles matching the provided ft constraint
+        """
         result = []
         for i in range(len(self.tiles)):
             for tile in self.tile_rotations[i]:
                 if ft.matches(tile):
                     t = tile.clone()
-                    t.x = ft.tile.x
-                    t.y = ft.tile.y
+                    t.c = ft.tile.c
                     result.append(t)
         return result

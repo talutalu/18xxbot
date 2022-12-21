@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from domain.state.map.coordinate import Coordinate
+
 """
 This class represents a hex tile.
 
@@ -20,7 +22,7 @@ from domain.state.map.city import City
 
 class Tile:
 
-    def __init__(self, id, connections, level, cities: list[City], x: int=None, y: int=None, revenue=None):
+    def __init__(self, id, connections, level, cities: list[City], c: Coordinate=None, revenue=None):
         self.id = id
         self.connections: list[tuple[int, ...]] = connections
         # empty is 0, yellow is 1, green is 2, brown is 3 and grey is 4
@@ -28,15 +30,14 @@ class Tile:
         # 0: no city, 1: town, 2: simple city, 3: y city, etc.
         self.cities = cities
 
-        self.x = x
-        self.y = y
+        self.c = c
 
         self.revenue = revenue
 
         self.rotation = 0
 
     def __str__(self):
-        return "Tile(" + str(self.connections) + ")"
+        return f"Tile(c={self.c}, connections={str(self.connections)})"
 
     def clone(self):
         return Tile(id=self.id,
@@ -44,8 +45,7 @@ class Tile:
                     level=self.level,
                     # TODO deep clone this?
                     cities=self.cities,
-                    x=self.x,
-                    y=self.y,
+                    c=self.c,
                     revenue=self.revenue)
 
     def get_unique_rotations(self):
