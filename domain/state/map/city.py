@@ -16,11 +16,19 @@ if TYPE_CHECKING:  # Only imports the below statements during type checking
 
 class City:
 
-    def __init__(self, tile: Tile, connection: int):
+    def __init__(self, tile: Tile, connection: int, for_clone=False):
         self.tile = tile
         self.connection = connection
-        self.routes: list[Route] = [Route(RouteAtom(self.tile.c, -1, face))
-                                    for face in set(tile.connections[connection])]
+        if for_clone:
+            self.routes = None
+        else:
+            self.routes: list[Route] = [Route(RouteAtom(self.tile.c, None, face))
+                                        for face in set(tile.connections[connection])]
+
+    def clone(self):
+        copy = City(self.tile, self.connection, for_clone=True)
+        copy.routes = [r.clone() for r in self.routes]
+        return copy
 
     def legal_new_tiles(self, ms: MapState) -> list[FutureTile]:
         """
@@ -31,6 +39,8 @@ class City:
 
         for route in self.routes:
             tip = route.list[-1]
+            if tip.b_face is None:
+                continue
             n = Coordinate.neighbor(tip.c, tip.b_face)
             n = ms.get_tile(n)
             if not n or not n.is_empty():

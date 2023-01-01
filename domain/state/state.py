@@ -39,12 +39,23 @@ class State:
         # index of the OP round
         self.op_index = 0
 
+    def clone(self):
+        companies = [cs.clone() for cs in self.company_states]
+        return State(map_state=self.map_state.clone(),
+                     player_states=[ps.clone() for ps in self.player_states],
+                     company_states=companies,
+                     tile_market_state=self.tile_market_state.clone(),
+                     share_market_state=self.share_market_state.clone(companies),
+                     phase=self.phase)
+
     def current_player(self):
         company2run = self.companies2run[0]
         for player_state in self.player_states:
             for share in player_state.shares:
                 if share.is_president and share.company == company2run:
                     return player_state.player
+        print(company2run)
+        assert False
 
     def legal_plays(self):
         company2run = self.companies2run[0]
@@ -56,3 +67,8 @@ class State:
     def do_play(self, play: Play):
         if isinstance(play, LayTrackPlay):
             self.map_state.put_tile(play.tile)
+            if len(self.companies2run) > 0:
+                self.companies2run = self.companies2run[1:]
+            else:
+                self.op_index += 1
+                self.companies2run = self.share_market_state.get_companies_desc()

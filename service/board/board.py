@@ -41,22 +41,30 @@ class Board:
                      share_market_state=share_market_state)
 
     def current_player(self, state):
+        print("board::current_player")
         return state.current_player()
 
     def next_state(self, state: State, play: Play):
+        print("board::next_state")
+        print("  " + str(play))
         # Takes the game state, and the move to be applied.
         # Returns the new game state.
 
         # TODO copy state here
-        if isinstance(play, LayTrackPlay):
-            state.map_state.put_tile(play.tile)
+        state = state.clone()
+        state.do_play(play)
 
         return state
 
     def legal_plays(self, state_history: list[State]):
-        return state_history[-1].legal_plays()
+        print("board::legal_plays")
+        legal_plays = state_history[-1].legal_plays()
+        for legal_play in legal_plays:
+            print("  " + str(legal_play))
+        return legal_plays
 
     def winner(self, state_history):
+        print("board::winner")
         # Takes a sequence of game states representing the full
         # game history.  If the game is now won, return the player
         # number.  If the game is still ongoing, return zero.  If

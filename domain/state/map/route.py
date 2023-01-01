@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # Only imports the below statements during type checking
 
 class Route:
 
-    def __init__(self, atom: RouteAtom):
+    def __init__(self, atom: RouteAtom | None):
         """
         A route can be:
          . merged
@@ -19,6 +19,11 @@ class Route:
          . forked
         """
         self.list: list[RouteAtom] = [atom]
+
+    def clone(self):
+        copy = Route(None)
+        copy.list = self.list[:]
+        return copy
 
     def is_extended_by(self, tile: Tile):
         last = self.list[-1]
@@ -38,10 +43,10 @@ class Route:
         connections = tile.get_connected_edges()
         a_face = (last.b_face + 3) % 6
         connections.remove(a_face)
-        b_face = -1 if len(connections) == 0 else next(iter(connections))
+        b_face = None if len(connections) == 0 else next(iter(connections))
         self.list.append(RouteAtom(tile.c, a_face, b_face))
 
-    def fork(self, x: int, y: int, tile: Tile):
+    def fork(self, tile: Tile):
         pass
 
     def __repr__(self):

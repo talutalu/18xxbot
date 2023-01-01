@@ -9,6 +9,12 @@ class ShareMarketState:
         self.values = [50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 250, 300, 350]
         self.companies: list[list[CompanyState]] = [[] for c in self.values]
 
+    def clone(self, companies: list[CompanyState]):
+        copy = ShareMarketState()
+        for company in companies:
+            copy.add_company(company)
+        return copy
+
     def add_company(self, company_state: CompanyState):
         index = self.values.index(company_state.share_value)
         self.companies[index].append(company_state)

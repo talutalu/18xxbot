@@ -9,3 +9,6 @@ class PlayerState:
         self.player = player
         self.money = money
         self.shares = shares
+
+    def clone(self):
+        return PlayerState(player=self.player, money=self.money, shares=self.shares[:])

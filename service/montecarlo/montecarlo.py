@@ -85,6 +85,7 @@ class MonteCarlo:
 
         expand = True
         for t in range(1, self.max_moves + 1):
+            print(plays)
             legal = self.board.legal_plays(states_copy)
             moves_states = [(p, self.board.next_state(state, p)) for p in legal]
 

@@ -4,10 +4,16 @@ from domain.state.map.tile import Tile
 
 class TileMarketState:
 
-    def __init__(self, tiles: list[Tile], quantities: list[int]):
+    def __init__(self, tiles: list[Tile], quantities: list[int], tile_rotations=None):
         self.tiles = tiles
-        self.tile_rotations = [tile.get_unique_rotations() for tile in self.tiles]
+        if tile_rotations:
+            self.tile_rotations = tile_rotations
+        else:
+            self.tile_rotations = [tile.get_unique_rotations() for tile in self.tiles]
         self.quantities = quantities
+
+    def clone(self):
+        return TileMarketState(tiles=self.tiles, quantities=self.quantities[:], tile_rotations=self.tile_rotations)
 
     def available_tiles(self, ft: FutureTile) -> list[Tile]:
         """

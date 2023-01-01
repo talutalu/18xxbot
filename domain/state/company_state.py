@@ -17,3 +17,12 @@ class CompanyState:
         self.share_value = share_value
         self.token_location = token_location
 
+    def clone(self):
+        return CompanyState(company=self.company,
+                            money=self.money,
+                            trains=self.trains[:],
+                            share_value=self.share_value,
+                            token_location=self.token_location)
+
+    
+
