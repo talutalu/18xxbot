@@ -13,12 +13,24 @@ async function main() {
     console.log(root);
     console.log(root);
     let child = await getSVG();
-    child.cloneNode();
-    child.setAttribute("x", "-50");
-    child.setAttribute("y", "-50");
-    child.setAttribute("width", "200");
-    child.setAttribute("height", "200");
-    root.appendChild(child);
+    const strokeWidth = 2;
+    const hexWidth = 200;
+    const hexHeight = 115.311 * 1.5;
+    const leftPadding = -100 - strokeWidth / 2;
+    const topPadding = -100 - strokeWidth / 2;
+    for (let y = 0; y < 5; y++) {
+        for (let x = 0; x < 9; x++) {
+            if (y % 2 == 0) {
+                child.setAttribute("x", `${leftPadding + x * (hexWidth - strokeWidth)}`);
+            } else {
+                child.setAttribute("x", `${leftPadding + (x + 0.5) * (hexWidth - strokeWidth)}`);
+            }
+            child.setAttribute("y", `${topPadding + y * (hexHeight - strokeWidth)}`);
+            child.setAttribute("width", "400");
+            child.setAttribute("height", "400");
+            root.appendChild(child.cloneNode(true));
+        }
+    }
 }
 
 main();
